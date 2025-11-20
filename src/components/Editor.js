@@ -26,6 +26,8 @@ import {
   List,
   ListItem,
   ListItemText,
+  Stack,
+  Avatar,
 } from '@mui/material';
 import {
   ArrowBack as ArrowBackIcon,
@@ -39,7 +41,16 @@ import { useAuth } from '../context/AuthContext';
 const Editor = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/login');
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
+
   const [document, setDocument] = useState(null);
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(true);
@@ -299,6 +310,19 @@ const Editor = () => {
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
             {document.title}
           </Typography>
+          {user && (
+            <Stack direction="row" spacing={2} alignItems="center" sx={{ mr: 2 }}>
+              <Stack direction="row" spacing={1} alignItems="center">
+                <Avatar sx={{ width: 32, height: 32 }}>
+                  {user.username?.[0]?.toUpperCase()}
+                </Avatar>
+                <Typography variant="body2">{user.username}</Typography>
+              </Stack>
+              <Button variant="outlined" size="small" onClick={handleLogout}>
+                Logout
+              </Button>
+            </Stack>
+          )}
           {activeUsers.map((u) => (
             <Chip
               key={u.id}

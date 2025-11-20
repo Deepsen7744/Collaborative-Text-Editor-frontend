@@ -18,6 +18,10 @@ import {
   DialogContent,
   DialogActions,
   TextField,
+  AppBar,
+  Toolbar,
+  Stack,
+  Avatar,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -35,7 +39,16 @@ const DocumentList = () => {
   const [newDocTitle, setNewDocTitle] = useState('');
   const [creating, setCreating] = useState(false);
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/login');
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
 
   useEffect(() => {
     loadDocuments();
@@ -115,6 +128,26 @@ const DocumentList = () => {
 
   return (
     <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
+      <AppBar position="static" color="default" sx={{ mb: 3 }}>
+        <Toolbar>
+          <Typography variant="h6" sx={{ flexGrow: 1 }}>
+            Collaborative Editor
+          </Typography>
+          {user && (
+            <Stack direction="row" spacing={2} alignItems="center">
+              <Stack direction="row" spacing={1} alignItems="center">
+                <Avatar sx={{ width: 32, height: 32 }}>
+                  {user.username?.[0]?.toUpperCase()}
+                </Avatar>
+                <Typography variant="body2">{user.username}</Typography>
+              </Stack>
+              <Button variant="outlined" color="primary" onClick={handleLogout}>
+                Logout
+              </Button>
+            </Stack>
+          )}
+        </Toolbar>
+      </AppBar>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
         <Typography variant="h4">My Documents</Typography>
         <Button
